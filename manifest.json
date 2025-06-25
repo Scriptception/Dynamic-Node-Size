@@ -1,0 +1,10 @@
+{
+	"id": "dynamic-node-size",
+	"name": "Dynamic Node Size",
+	"version": "0.0.1",
+	"minAppVersion": "1.0.0",
+	"description": "Dynamically size graph nodes based on their connected nodes (including children). Features configurable multiplier and maximum size limits. Also allows for manual node size setting in frontmatter.",
+	"author": "Scriptception",
+	"authorUrl": "https://github.com/Scriptception",
+	"isDesktopOnly": false
+}
