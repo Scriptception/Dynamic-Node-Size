@@ -99,7 +99,7 @@ class DynamicNodeSizePlugin extends Plugin {
     }
 
     // Calculate total connected nodes including children recursively
-    calculateTotalConnectedNodes(nodeId, visited = new Set()) {
+    calculateTotalConnectedNodes(nodeId, visited = new Set(), currentDepth = 0) {
         if (visited.has(nodeId)) {
             return 0;
         }
@@ -110,13 +110,19 @@ class DynamicNodeSizePlugin extends Plugin {
             return 0;
         }
 
+        // Check if we've reached the maximum depth
+        const maxDepth = this.settings?.maxDepth || 3;
+        if (currentDepth >= maxDepth) {
+            return 1; // Count only the current node, don't go deeper
+        }
+
         // Get all links from this file
         const links = this.app.metadataCache.resolvedLinks[file.path] || {};
         let totalConnected = 1; // Start with 1 for the current node
 
         // Recursively count all connected nodes
         for (const linkedPath in links) {
-            totalConnected += this.calculateTotalConnectedNodes(linkedPath, visited);
+            totalConnected += this.calculateTotalConnectedNodes(linkedPath, visited, currentDepth + 1);
         }
 
         return totalConnected;
@@ -155,6 +161,7 @@ class DynamicNodeSizePlugin extends Plugin {
             sizeMultiplier: 2.0,
             multiplierScale: 1.0,
             maxSize: 50,
+            maxDepth: 3,
             excludeFolders: [],
             excludeTitles: [],
             excludeTags: []
@@ -219,6 +226,19 @@ class DynamicNodeSizeSettingTab extends PluginSettingTab {
                     refreshAllGraphViews(this.plugin);
                 }));
 
+        new Setting(containerEl)
+            .setName('Maximum Depth')
+            .setDesc('Maximum depth to traverse when calculating connected nodes. Lower values improve performance and focus on direct connections.')
+            .addSlider(slider => slider
+                .setLimits(1, 20, 1)
+                .setValue(this.plugin.settings?.maxDepth || 3)
+                .setDynamicTooltip()
+                .onChange(async (value) => {
+                    this.plugin.settings.maxDepth = value;
+                    await this.plugin.saveSettings();
+                    refreshAllGraphViews(this.plugin);
+                }));
+
         // Restore to Default button (sliders only)
         const restoreBtn = containerEl.createEl('button', { text: 'Restore to Default' });
         restoreBtn.style.marginTop = '1em';
@@ -226,6 +246,7 @@ class DynamicNodeSizeSettingTab extends PluginSettingTab {
             this.plugin.settings.sizeMultiplier = 2.0;
             this.plugin.settings.multiplierScale = 1.0;
             this.plugin.settings.maxSize = 50;
+            this.plugin.settings.maxDepth = 3;
             await this.plugin.saveSettings();
             this.display(); // Refresh UI
             refreshAllGraphViews(this.plugin);
