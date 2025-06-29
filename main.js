@@ -158,8 +158,8 @@ class DynamicNodeSizePlugin extends Plugin {
 
     async loadSettings() {
         this.settings = Object.assign({}, {
-            sizeMultiplier: 2.0,
-            multiplierScale: 1.0,
+            sizeMultiplier: 2,
+            multiplierScale: 1,
             maxSize: 50,
             maxDepth: 3,
             excludeFolders: [],
@@ -189,62 +189,70 @@ class DynamicNodeSizeSettingTab extends PluginSettingTab {
 
         new Setting(containerEl)
             .setName('Size Multiplier')
-            .setDesc('Multiplier for calculating node size based on connected nodes. Higher values make nodes larger.')
-            .addSlider(slider => slider
-                .setLimits(0.1, 10, 0.1)
-                .setValue(this.plugin.settings?.sizeMultiplier || 2.0)
-                .setDynamicTooltip()
+            .setDesc('Multiplier for calculating node size based on connected nodes. Higher values make nodes larger. (default: 2)')
+            .addText(text => text
+                .setPlaceholder('2')
+                .setValue(this.plugin.settings?.sizeMultiplier?.toString() || '2')
                 .onChange(async (value) => {
-                    this.plugin.settings.sizeMultiplier = value;
-                    await this.plugin.saveSettings();
-                    refreshAllGraphViews(this.plugin);
+                    const numValue = parseInt(value);
+                    if (!isNaN(numValue) && numValue >= 1 && numValue <= 10) {
+                        this.plugin.settings.sizeMultiplier = numValue;
+                        await this.plugin.saveSettings();
+                        refreshAllGraphViews(this.plugin);
+                    }
                 }));
 
         new Setting(containerEl)
             .setName('Multiplier Scale')
-            .setDesc('Additional scale factor applied to the calculated node size for fine-tuning.')
-            .addSlider(slider => slider
-                .setLimits(0.1, 5, 0.05)
-                .setValue(this.plugin.settings?.multiplierScale || 1.0)
-                .setDynamicTooltip()
+            .setDesc('Additional scale factor applied to the calculated node size for fine-tuning. (default: 1)')
+            .addText(text => text
+                .setPlaceholder('1')
+                .setValue(this.plugin.settings?.multiplierScale?.toString() || '1')
                 .onChange(async (value) => {
-                    this.plugin.settings.multiplierScale = value;
-                    await this.plugin.saveSettings();
-                    refreshAllGraphViews(this.plugin);
+                    const numValue = parseInt(value);
+                    if (!isNaN(numValue) && numValue >= 1 && numValue <= 5) {
+                        this.plugin.settings.multiplierScale = numValue;
+                        await this.plugin.saveSettings();
+                        refreshAllGraphViews(this.plugin);
+                    }
                 }));
 
         new Setting(containerEl)
             .setName('Maximum Node Size')
-            .setDesc('Maximum size a node can reach to prevent extremely large nodes.')
-            .addSlider(slider => slider
-                .setLimits(10, 200, 5)
-                .setValue(this.plugin.settings?.maxSize || 50)
-                .setDynamicTooltip()
+            .setDesc('Maximum size a node can reach to prevent extremely large nodes. (default: 50)')
+            .addText(text => text
+                .setPlaceholder('50')
+                .setValue(this.plugin.settings?.maxSize?.toString() || '50')
                 .onChange(async (value) => {
-                    this.plugin.settings.maxSize = value;
-                    await this.plugin.saveSettings();
-                    refreshAllGraphViews(this.plugin);
+                    const numValue = parseInt(value);
+                    if (!isNaN(numValue) && numValue >= 10 && numValue <= 200) {
+                        this.plugin.settings.maxSize = numValue;
+                        await this.plugin.saveSettings();
+                        refreshAllGraphViews(this.plugin);
+                    }
                 }));
 
         new Setting(containerEl)
             .setName('Maximum Depth')
-            .setDesc('Maximum depth to traverse when calculating connected nodes. Lower values improve performance and focus on direct connections.')
-            .addSlider(slider => slider
-                .setLimits(1, 20, 1)
-                .setValue(this.plugin.settings?.maxDepth || 3)
-                .setDynamicTooltip()
+            .setDesc('Maximum depth to traverse when calculating connected nodes. Lower values improve performance and focus on direct connections. (default: 3)')
+            .addText(text => text
+                .setPlaceholder('3')
+                .setValue(this.plugin.settings?.maxDepth?.toString() || '3')
                 .onChange(async (value) => {
-                    this.plugin.settings.maxDepth = value;
-                    await this.plugin.saveSettings();
-                    refreshAllGraphViews(this.plugin);
+                    const numValue = parseInt(value);
+                    if (!isNaN(numValue) && numValue >= 1 && numValue <= 20) {
+                        this.plugin.settings.maxDepth = numValue;
+                        await this.plugin.saveSettings();
+                        refreshAllGraphViews(this.plugin);
+                    }
                 }));
 
-        // Restore to Default button (sliders only)
+        // Restore to Default button (number inputs)
         const restoreBtn = containerEl.createEl('button', { text: 'Restore to Default' });
         restoreBtn.style.marginTop = '1em';
         restoreBtn.onclick = async () => {
-            this.plugin.settings.sizeMultiplier = 2.0;
-            this.plugin.settings.multiplierScale = 1.0;
+            this.plugin.settings.sizeMultiplier = 2;
+            this.plugin.settings.multiplierScale = 1;
             this.plugin.settings.maxSize = 50;
             this.plugin.settings.maxDepth = 3;
             await this.plugin.saveSettings();

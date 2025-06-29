@@ -22,11 +22,11 @@ Dynamically size graph nodes in Obsidian based on their connected nodes (includi
 
 ## Settings
 ### Node Size Controls
-- **Size Multiplier:** Controls how much the number of connected nodes affects the node size (slider).
-- **Multiplier Scale:** Additional global scaling factor for all node sizes (slider).
-- **Maximum Node Size:** Caps the maximum size a node can reach (slider).
-- **Maximum Depth:** Limits how deep the plugin traverses when calculating connected nodes. Lower values improve performance and focus on direct connections (slider, 1-20, default: 3).
-- **Restore to Default:** Resets only the above sliders to their default values.
+- **Size Multiplier:** Controls how much the number of connected nodes affects the node size (number input, 1-10).
+- **Multiplier Scale:** Additional global scaling factor for all node sizes (number input, 1-5).
+- **Maximum Node Size:** Caps the maximum size a node can reach (number input, 10-200).
+- **Maximum Depth:** Limits how deep the plugin traverses when calculating connected nodes. Lower values improve performance and focus on direct connections (number input, 1-20, default: 3).
+- **Restore to Default:** Resets only the above number inputs to their default values.
 
 ### Exclusions
 - **Exclude Folders:** Add folders to exclude from dynamic sizing using an autocomplete picker. Remove folders with a single click.
